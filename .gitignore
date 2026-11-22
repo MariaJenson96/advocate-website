@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment
+# Environment files may contain passwords — never commit them
 .env
-.env.production
+.env.*
+!.env.example
