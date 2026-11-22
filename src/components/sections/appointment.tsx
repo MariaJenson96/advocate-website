@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { ArrowRight, Check, CircleAlert, CircleCheck, LoaderCircle, Lock, Phone } from 'lucide-react'
 import { site } from '@/config/site'
 import { contactMethods, enquirySchema, serviceOptions, todayIso, type EnquiryValues } from '@/lib/enquiry-schema'
-import { EnquiryNotConfiguredError, submitEnquiry } from '@/lib/enquiry'
+import { EnquiryNotConfiguredError, EnquiryRateLimitError, submitEnquiry } from '@/lib/enquiry'
 import { ease } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Reveal, RevealItem } from '@/components/common/reveal'
 import { SectionHeading } from '@/components/common/section-heading'
 
-type Status = { kind: 'idle' } | { kind: 'success'; method: string; simulated: boolean } | { kind: 'error'; message: string }
+type Status = { kind: 'idle' } | { kind: 'success'; method: string } | { kind: 'error'; message: string }
 
 const steps = [
   { title: 'Share a brief overview', text: 'Tell us the nature of your requirement — general details only.' },
@@ -39,8 +39,8 @@ export function Appointment() {
   const onSubmit = async (values: EnquiryValues) => {
     setStatus({ kind: 'idle' })
     try {
-      const result = await submitEnquiry(values)
-      setStatus({ kind: 'success', method: values.contactMethod, simulated: result.simulated })
+      await submitEnquiry(values)
+      setStatus({ kind: 'success', method: values.contactMethod })
       reset(defaultValues)
     } catch (err) {
       setStatus({
@@ -48,7 +48,9 @@ export function Appointment() {
         message:
           err instanceof EnquiryNotConfiguredError
             ? `Online appointment requests are not yet enabled. Please call ${site.contact.phone} or email ${site.contact.email}.`
-            : 'Your request could not be sent. Please check your connection and try again, or contact the office directly.',
+            : err instanceof EnquiryRateLimitError
+              ? 'You have sent several requests in a short time. Please wait a few minutes, or contact the office directly.'
+              : 'Your request could not be sent. Please check your connection and try again, or contact the office directly.',
       })
     }
   }
@@ -128,11 +130,6 @@ export function Appointment() {
                   <p className="mt-4 max-w-md leading-relaxed text-white/65">
                     Thank you. Your appointment request has been received. The office will contact you by <strong className="font-semibold text-white">{status.method === 'Phone call' ? 'phone' : status.method === 'Email' ? 'email' : status.method}</strong> to confirm a suitable time.
                   </p>
-                  {status.simulated && (
-                    <p className="mt-4 max-w-md border border-gold/40 px-4 py-3 text-xs text-gold">
-                      Development mode: no enquiry endpoint is configured, so this submission was simulated. Set VITE_ENQUIRY_ENDPOINT to enable delivery.
-                    </p>
-                  )}
                   <Button variant="outline" className="mt-10" onClick={() => setStatus({ kind: 'idle' })}>
                     Submit Another Request
                   </Button>

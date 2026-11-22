@@ -106,14 +106,14 @@ Enquiries are sent to **`api/enquiry.ts`**, a small server function included in 
    - **Gmail / Google Workspace:** turn on 2-Step Verification, then go to Google Account → Security → *App passwords*. `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`.
    - **Zoho Mail:** Settings → Security → App Passwords. `smtp.zoho.in`, port `465`.
    - **Outlook / Microsoft 365:** `smtp.office365.com`, port `587`. SMTP sending may need to be enabled by the administrator.
-2. **Local testing:** copy `.env.example` to `.env` and fill in `VITE_ENQUIRY_ENDPOINT=/api/enquiry` and the `SMTP_*` values. `npm run dev` runs the function locally, so a real test email is delivered.
-3. **Live site (Vercel):** Project → Settings → Environment Variables. Add `VITE_ENQUIRY_ENDPOINT=/api/enquiry`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, optionally `ENQUIRY_TO` and `ALLOWED_ORIGINS=https://www.your-domain.com`. Then redeploy.
+2. **Local testing:** copy `.env.example` to `.env` and fill in the `SMTP_*` values. `npm run dev` runs the function locally, so a real test email is delivered.
+3. **Live site (Vercel):** Project → Settings → Environment Variables. Add `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, optionally `ENQUIRY_TO` and `ALLOWED_ORIGINS=https://www.your-domain.com`. Then redeploy.
 
 Server-only values (`SMTP_*`, `ENQUIRY_TO`, `ALLOWED_ORIGINS`) must **not** start with `VITE_`, which would expose them in the browser.
 
-If `VITE_ENQUIRY_ENDPOINT` is empty, development mode simulates success, and production shows an error asking visitors to call or email instead. Visitors are told not to submit confidential details or documents; keep it that way.
+The form always sends to `/api/enquiry`; there is nothing to configure in the browser. If the `SMTP_*` settings are missing, the form shows "Online appointment requests are not yet enabled" with the office phone and email. Use `npm run dev` to test locally: `npm run preview` serves the pages only, not the email function. Visitors are told not to submit confidential details or documents; keep it that way.
 
-**Other hosts:** Netlify or another host needs the function adapted to its format, or `VITE_ENQUIRY_ENDPOINT` pointed at any HTTPS endpoint that accepts a JSON POST.
+**Other hosts:** Netlify and other hosts need `api/enquiry.ts` adapted to their function format.
 
 ## SEO
 
@@ -125,7 +125,7 @@ If `VITE_ENQUIRY_ENDPOINT` is empty, development mode simulates success, and pro
 
 ## Deployment
 
-**Vercel is recommended**, because it runs the built-in enquiry function (`api/`) automatically. Other static hosts work for the pages. SPA fallbacks are included: `vercel.json` for Vercel and `public/_redirects` for Netlify. Set `VITE_SITE_URL` and `VITE_ENQUIRY_ENDPOINT` in the host's environment settings.
+**Vercel is recommended**, because it runs the built-in enquiry function (`api/`) automatically. Other static hosts work for the pages. SPA fallbacks are included: `vercel.json` for Vercel and `public/_redirects` for Netlify. Set `VITE_SITE_URL` and the `SMTP_*` values in the host's environment settings.
 
 ## Accessibility
 
@@ -147,7 +147,7 @@ Skip link, visible gold focus rings, keyboard-operable menu, accordion, select a
 - [ ] `src/data/articles.ts`: advocate reviews each article, confirms jurisdiction and dates, then sets `reviewed: true` (this removes the "Draft — pending review" notice)
 - [ ] Legal pages (`src/pages/legal-page.tsx`): adapt the privacy policy (including the Digital Personal Data Protection Act, 2023), terms and disclaimer, then fill in `[Date]`, `[City]` and the form service name
 - [ ] Disclaimer gate wording approved (toggle: `site.disclaimerGate.enabled`)
-- [ ] Enquiry email configured (`VITE_ENQUIRY_ENDPOINT=/api/enquiry` + `SMTP_*` in Vercel) and a test enquiry received
+- [ ] Enquiry email configured (`SMTP_*` in Vercel) and a test enquiry received
 - [ ] `site.structuredData.enabled = true` once all details are verified
 
 ### Professional-conduct note (India)
