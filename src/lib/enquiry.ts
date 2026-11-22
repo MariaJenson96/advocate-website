@@ -1,18 +1,13 @@
 import type { EnquiryValues } from './enquiry-schema'
 
 /**
- * ENQUIRY INTEGRATION POINT
- * ---------------------------------------------------------------------------
- * Set VITE_ENQUIRY_ENDPOINT to a backend API or an approved form service
- * (e.g. a Formspree / Basin / Getform endpoint, or your own HTTPS API).
- * The form POSTs JSON and expects a 2xx response.
- *
- * Until an endpoint is configured the form is NOT functional:
- *  - in development it simulates success so the UI can be reviewed;
- *  - in production it shows an error that directs visitors to call instead.
+ * Appointment enquiries are always sent to the site's own server function
+ * (api/enquiry.ts), which emails them to the advocate using the SMTP_*
+ * settings. There is no browser-side configuration.
  */
-const endpoint = import.meta.env.VITE_ENQUIRY_ENDPOINT as string | undefined
+const ENDPOINT = '/api/enquiry'
 
+/** The server has no email settings yet (SMTP_* missing) */
 export class EnquiryNotConfiguredError extends Error {
   constructor() {
     super('Online enquiries are not yet enabled.')
@@ -20,47 +15,30 @@ export class EnquiryNotConfiguredError extends Error {
   }
 }
 
-export interface EnquiryResult {
-  simulated: boolean
+/** Too many submissions from this visitor in a short time */
+export class EnquiryRateLimitError extends Error {
+  constructor() {
+    super('Too many requests.')
+    this.name = 'EnquiryRateLimitError'
+  }
 }
 
-export async function submitEnquiry(values: EnquiryValues): Promise<EnquiryResult> {
+export async function submitEnquiry(values: EnquiryValues): Promise<void> {
   // Silently drop bot submissions caught by the honeypot
-  if (values.website) return { simulated: true }
-
-  const payload = {
-    fullName: values.fullName,
-    phone: values.phone,
-    email: values.email,
-    service: values.service,
-    preferredDate: values.preferredDate,
-    contactMethod: values.contactMethod,
-    message: values.message,
-    consent: values.consent,
-    submittedAt: new Date().toISOString(),
-    source: typeof window !== 'undefined' ? window.location.href : '',
-  }
-
-  if (!endpoint) {
-    if (import.meta.env.DEV) {
-      console.warn('[enquiry] VITE_ENQUIRY_ENDPOINT is not set — simulating a successful submission.', payload)
-      await new Promise((r) => setTimeout(r, 1200))
-      return { simulated: true }
-    }
-    throw new EnquiryNotConfiguredError()
-  }
+  if (values.website) return
 
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 15000)
+  const timeout = setTimeout(() => controller.abort(), 20000)
   try {
-    const res = await fetch(endpoint, {
+    const res = await fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(values),
       signal: controller.signal,
     })
+    if (res.status === 503) throw new EnquiryNotConfiguredError()
+    if (res.status === 429) throw new EnquiryRateLimitError()
     if (!res.ok) throw new Error(`Request failed with status ${res.status}`)
-    return { simulated: false }
   } finally {
     clearTimeout(timeout)
   }

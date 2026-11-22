@@ -11,10 +11,13 @@ A premium, fully responsive website for an Advocate / Legal Consultant, built wi
 ```bash
 npm install
 cp .env.example .env      # then edit values
-npm run dev               # http://localhost:5173
+npm run dev               # development mode with live reload → http://localhost:5173
+npm start                 # build + run the production version locally → http://localhost:4173
 npm run build             # type-check + production build → dist/
-npm run preview           # serve the production build locally
+npm run preview           # serve an existing production build locally
 ```
+
+Appointment emails are sent in **all** local modes (`dev`, `start`, `preview`) once the `SMTP_*` values are in `.env`.
 
 Requires Node 20.19+ (tested on Node 22).
 
@@ -37,6 +40,7 @@ GSAP was not needed: every effect (line-by-line text reveal, staggered cards, ti
 ## Folder structure
 
 ```
+api/enquiry.ts               ← email function: sends appointment enquiries to the advocate
 src/
 ├── config/site.ts            ← ALL advocate details (name, bar enrolment, contact, toggles)
 ├── data/                     ← editable content
@@ -87,22 +91,34 @@ scripts/                      ← placeholder-art generators
 ### Animation patterns
 `Reveal` / `RevealItem` give fade-and-slide-up on scroll, with optional staggering. The hero reveals its heading line by line through masks. Buttons use a hover "wipe". Gold underlines animate on links. Cards zoom their images subtly. The experience timeline draws its gold line in. `MotionConfig reducedMotion="user"`, a CSS `prefers-reduced-motion` block and a Lenis opt-out together respect the visitor's motion settings.
 
-## Enquiry form: connect a backend
+## Enquiry form: email delivery (built in)
 
-The form validates the name, phone (10–15 digits), email, service, a date from today onward, contact method, description length and consent. It has a spam honeypot, a loading state, a success state and an error state.
+The form validates every field in the browser (name, phone with 10–15 digits, email, service, a date from today onward, contact method, description length, consent). It has a spam honeypot and shows loading, success and error states.
 
-**It is not functional until an endpoint is set:**
+Enquiries are sent to **`api/enquiry.ts`**, a small server function included in this project. It emails each enquiry **directly to the advocate's own mailbox over SMTP**, so no third-party form service stores client data. The function:
 
-```bash
-# .env
-VITE_ENQUIRY_ENDPOINT=https://formspree.io/f/your-id   # or your own HTTPS API
-```
+- re-checks every field with the same rules as the form (`src/lib/enquiry-schema.ts`);
+- quietly discards bot submissions caught by the honeypot;
+- limits each visitor to 5 submissions per 10 minutes (best effort);
+- rejects oversized requests and, optionally, submissions from other websites (`ALLOWED_ORIGINS`);
+- sends a formatted email with **Reply-To set to the visitor**, so the advocate can simply press Reply.
 
-`src/lib/enquiry.ts` POSTs JSON (`fullName, phone, email, service, preferredDate, contactMethod, message, consent, submittedAt, source`) and treats any 2xx response as success. Without an endpoint:
-- **development** simulates success, and the success panel says so;
-- **production** shows an error asking visitors to call or email instead.
+### Setup
 
-Visitors are told not to submit confidential details or documents. Keep it that way, and if you build your own API, serve it over HTTPS with rate limiting.
+1. **Create an app password** for the mailbox that will send the emails. Don't use the normal login password.
+   - **Gmail / Google Workspace:** turn on 2-Step Verification, then go to Google Account → Security → *App passwords*. `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`.
+   - **Zoho Mail:** Settings → Security → App Passwords. `smtp.zoho.in`, port `465`.
+   - **Outlook / Microsoft 365:** `smtp.office365.com`, port `587`. SMTP sending may need to be enabled by the administrator.
+2. **Add the settings:** copy `.env.example` to a file named exactly `.env` (other names such as `.env.adv` are ignored) and fill in the `SMTP_*` values.
+3. **Run the site** with `npm run dev` or `npm start`. Both run the email function, so submitting the form delivers a real email. Restart after changing `.env`.
+
+`.env` is excluded from git (see `.gitignore`), so the password stays on your computer. **Never commit it**: the repository is public.
+
+Server-only values (`SMTP_*`, `ENQUIRY_TO`, `ALLOWED_ORIGINS`) must **not** start with `VITE_`, which would expose them in the browser.
+
+The form always sends to `/api/enquiry`; there is nothing to configure in the browser. If the `SMTP_*` settings are missing, the form shows "Online appointment requests are not yet enabled" with the office phone and email. Visitors are told not to submit confidential details or documents; keep it that way.
+
+The email function runs inside the site's local server (`npm run dev` / `npm start`). A static-only host that serves just the built files cannot send the emails.
 
 ## SEO
 
@@ -114,7 +130,15 @@ Visitors are told not to submit confidential details or documents. Keep it that 
 
 ## Deployment
 
-Any static host works. SPA fallbacks are included: `vercel.json` for Vercel and `public/_redirects` for Netlify. Set `VITE_SITE_URL` and `VITE_ENQUIRY_ENDPOINT` in the host's environment settings.
+The site runs on your own computer:
+
+```bash
+npm start        # builds the site, then serves it at http://localhost:4173 with email sending enabled
+```
+
+Settings come from the `.env` file (`SMTP_*` for email, optionally `VITE_SITE_URL`).
+
+To publish it on the internet later, use a host or server that can run Node.js, because the email function needs it. Vite's preview server is meant for local use, so a public server should run behind a proper web server or be adapted to the host's function format. `public/_redirects` is included for Netlify-style hosts that serve only the pages.
 
 ## Accessibility
 
@@ -136,7 +160,7 @@ Skip link, visible gold focus rings, keyboard-operable menu, accordion, select a
 - [ ] `src/data/articles.ts`: advocate reviews each article, confirms jurisdiction and dates, then sets `reviewed: true` (this removes the "Draft — pending review" notice)
 - [ ] Legal pages (`src/pages/legal-page.tsx`): adapt the privacy policy (including the Digital Personal Data Protection Act, 2023), terms and disclaimer, then fill in `[Date]`, `[City]` and the form service name
 - [ ] Disclaimer gate wording approved (toggle: `site.disclaimerGate.enabled`)
-- [ ] `VITE_ENQUIRY_ENDPOINT` configured and a test enquiry received
+- [ ] Enquiry email configured (`SMTP_*` in `.env`) and a test enquiry received
 - [ ] `site.structuredData.enabled = true` once all details are verified
 
 ### Professional-conduct note (India)
