@@ -77,7 +77,7 @@ function apiMiddleware(load: () => Promise<ApiModule>, log: (msg: string) => voi
 
 /**
  * Runs api/enquiry.ts locally — under `npm run dev` AND `npm run preview` /
- * `npm start` — mirroring the Vercel Function, so enquiry emails are really
+ * `npm start` — so enquiry emails are really
  * sent on your own computer using the SMTP_* values from .env.
  */
 function localApi(env: Record<string, string>): Plugin {

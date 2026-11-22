@@ -1,5 +1,6 @@
 /**
- * POST /api/enquiry — appointment enquiry handler (Vercel Function).
+ * POST /api/enquiry — appointment enquiry handler.
+ * Runs inside the site's local server (`npm run dev` / `npm start`).
  *
  * Emails each enquiry directly to the advocate's own mailbox over SMTP.
  * No third-party form service stores the data. Configure with the

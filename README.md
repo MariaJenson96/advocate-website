@@ -40,7 +40,7 @@ GSAP was not needed: every effect (line-by-line text reveal, staggered cards, ti
 ## Folder structure
 
 ```
-api/enquiry.ts               ← server function: emails enquiries to the advocate (Vercel)
+api/enquiry.ts               ← email function: sends appointment enquiries to the advocate
 src/
 ├── config/site.ts            ← ALL advocate details (name, bar enrolment, contact, toggles)
 ├── data/                     ← editable content
@@ -109,14 +109,16 @@ Enquiries are sent to **`api/enquiry.ts`**, a small server function included in 
    - **Gmail / Google Workspace:** turn on 2-Step Verification, then go to Google Account → Security → *App passwords*. `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`.
    - **Zoho Mail:** Settings → Security → App Passwords. `smtp.zoho.in`, port `465`.
    - **Outlook / Microsoft 365:** `smtp.office365.com`, port `587`. SMTP sending may need to be enabled by the administrator.
-2. **Local testing:** copy `.env.example` to `.env` and fill in the `SMTP_*` values. `npm run dev`, `npm start` and `npm run preview` all run the function locally, so a real test email is delivered.
-3. **Live site (Vercel):** Project → Settings → Environment Variables. Add `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, optionally `ENQUIRY_TO` and `ALLOWED_ORIGINS=https://www.your-domain.com`. Then redeploy.
+2. **Add the settings:** copy `.env.example` to a file named exactly `.env` (other names such as `.env.adv` are ignored) and fill in the `SMTP_*` values.
+3. **Run the site** with `npm run dev` or `npm start`. Both run the email function, so submitting the form delivers a real email. Restart after changing `.env`.
+
+`.env` is excluded from git (see `.gitignore`), so the password stays on your computer. **Never commit it**: the repository is public.
 
 Server-only values (`SMTP_*`, `ENQUIRY_TO`, `ALLOWED_ORIGINS`) must **not** start with `VITE_`, which would expose them in the browser.
 
 The form always sends to `/api/enquiry`; there is nothing to configure in the browser. If the `SMTP_*` settings are missing, the form shows "Online appointment requests are not yet enabled" with the office phone and email. Visitors are told not to submit confidential details or documents; keep it that way.
 
-**Other hosts:** Netlify and other hosts need `api/enquiry.ts` adapted to their function format.
+The email function runs inside the site's local server (`npm run dev` / `npm start`). A static-only host that serves just the built files cannot send the emails.
 
 ## SEO
 
@@ -128,7 +130,15 @@ The form always sends to `/api/enquiry`; there is nothing to configure in the br
 
 ## Deployment
 
-**Vercel is recommended**, because it runs the built-in enquiry function (`api/`) automatically. Other static hosts work for the pages. SPA fallbacks are included: `vercel.json` for Vercel and `public/_redirects` for Netlify. Set `VITE_SITE_URL` and the `SMTP_*` values in the host's environment settings.
+The site runs on your own computer:
+
+```bash
+npm start        # builds the site, then serves it at http://localhost:4173 with email sending enabled
+```
+
+Settings come from the `.env` file (`SMTP_*` for email, optionally `VITE_SITE_URL`).
+
+To publish it on the internet later, use a host or server that can run Node.js, because the email function needs it. Vite's preview server is meant for local use, so a public server should run behind a proper web server or be adapted to the host's function format. `public/_redirects` is included for Netlify-style hosts that serve only the pages.
 
 ## Accessibility
 
@@ -150,7 +160,7 @@ Skip link, visible gold focus rings, keyboard-operable menu, accordion, select a
 - [ ] `src/data/articles.ts`: advocate reviews each article, confirms jurisdiction and dates, then sets `reviewed: true` (this removes the "Draft — pending review" notice)
 - [ ] Legal pages (`src/pages/legal-page.tsx`): adapt the privacy policy (including the Digital Personal Data Protection Act, 2023), terms and disclaimer, then fill in `[Date]`, `[City]` and the form service name
 - [ ] Disclaimer gate wording approved (toggle: `site.disclaimerGate.enabled`)
-- [ ] Enquiry email configured (`SMTP_*` in Vercel) and a test enquiry received
+- [ ] Enquiry email configured (`SMTP_*` in `.env`) and a test enquiry received
 - [ ] `site.structuredData.enabled = true` once all details are verified
 
 ### Professional-conduct note (India)
