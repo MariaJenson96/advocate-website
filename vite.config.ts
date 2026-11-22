@@ -1,4 +1,5 @@
-import { defineConfig, loadEnv, type Plugin, type ViteDevServer } from 'vite'
+import { defineConfig, loadEnv, runnerImport, type Plugin, type PreviewServer, type ViteDevServer } from 'vite'
+import type { IncomingMessage, ServerResponse } from 'node:http'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
@@ -45,38 +46,57 @@ function seoFiles(siteUrl: string): Plugin {
 
 const SERVER_ENV_KEYS = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'ENQUIRY_TO', 'ALLOWED_ORIGINS']
 
+type ApiModule = { POST: (req: Request) => Promise<Response>; GET: () => Response }
+type Middleware = (req: IncomingMessage, res: ServerResponse) => Promise<void>
+
+/** Bridges a Node request to the Web-standard handler in api/enquiry.ts */
+function apiMiddleware(load: () => Promise<ApiModule>, log: (msg: string) => void): Middleware {
+  return async (req, res) => {
+    try {
+      const mod = await load()
+      const chunks: Buffer[] = []
+      for await (const chunk of req) chunks.push(chunk as Buffer)
+      const headers = new Headers()
+      for (const [k, v] of Object.entries(req.headers)) if (typeof v === 'string') headers.set(k, v)
+      const request = new Request('http://localhost/api/enquiry', {
+        method: req.method,
+        headers,
+        body: req.method === 'POST' ? Buffer.concat(chunks).toString() : undefined,
+      })
+      const response = await (req.method === 'POST' ? mod.POST(request) : mod.GET())
+      res.statusCode = response.status
+      response.headers.forEach((value, key) => res.setHeader(key, value))
+      res.end(await response.text())
+    } catch (err) {
+      log(String(err))
+      res.statusCode = 500
+      res.end(JSON.stringify({ ok: false }))
+    }
+  }
+}
+
 /**
- * Runs api/enquiry.ts under `npm run dev`, mirroring the Vercel Function,
- * so the real email delivery can be tested locally using values from .env.
+ * Runs api/enquiry.ts locally — under `npm run dev` AND `npm run preview` /
+ * `npm start` — mirroring the Vercel Function, so enquiry emails are really
+ * sent on your own computer using the SMTP_* values from .env.
  */
 function localApi(env: Record<string, string>): Plugin {
+  const exposeEnv = () => {
+    for (const key of SERVER_ENV_KEYS) if (env[key]) process.env[key] = env[key]
+  }
   return {
     name: 'advocate-local-api',
-    apply: 'serve',
     configureServer(server: ViteDevServer) {
-      for (const key of SERVER_ENV_KEYS) if (env[key]) process.env[key] = env[key]
-      server.middlewares.use('/api/enquiry', async (req, res) => {
-        try {
-          const mod = await server.ssrLoadModule('/api/enquiry.ts')
-          const chunks: Buffer[] = []
-          for await (const chunk of req) chunks.push(chunk as Buffer)
-          const headers = new Headers()
-          for (const [k, v] of Object.entries(req.headers)) if (typeof v === 'string') headers.set(k, v)
-          const request = new Request('http://localhost/api/enquiry', {
-            method: req.method,
-            headers,
-            body: req.method === 'POST' ? Buffer.concat(chunks).toString() : undefined,
-          })
-          const response: Response = await (req.method === 'POST' ? mod.POST(request) : mod.GET())
-          res.statusCode = response.status
-          response.headers.forEach((value, key) => res.setHeader(key, value))
-          res.end(await response.text())
-        } catch (err) {
-          server.config.logger.error(String(err))
-          res.statusCode = 500
-          res.end(JSON.stringify({ ok: false }))
-        }
-      })
+      exposeEnv()
+      const load = () => server.ssrLoadModule('/api/enquiry.ts') as Promise<ApiModule>
+      server.middlewares.use('/api/enquiry', apiMiddleware(load, (m) => server.config.logger.error(m)))
+    },
+    configurePreviewServer(server: PreviewServer) {
+      exposeEnv()
+      let cached: Promise<ApiModule> | undefined
+      const load = () =>
+        (cached ??= runnerImport<ApiModule>(fileURLToPath(new URL('./api/enquiry.ts', import.meta.url))).then((r) => r.module))
+      server.middlewares.use('/api/enquiry', apiMiddleware(load, (m) => server.config.logger.error(m)))
     },
   }
 }

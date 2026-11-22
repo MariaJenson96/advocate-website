@@ -11,10 +11,13 @@ A premium, fully responsive website for an Advocate / Legal Consultant, built wi
 ```bash
 npm install
 cp .env.example .env      # then edit values
-npm run dev               # http://localhost:5173
+npm run dev               # development mode with live reload → http://localhost:5173
+npm start                 # build + run the production version locally → http://localhost:4173
 npm run build             # type-check + production build → dist/
-npm run preview           # serve the production build locally
+npm run preview           # serve an existing production build locally
 ```
+
+Appointment emails are sent in **all** local modes (`dev`, `start`, `preview`) once the `SMTP_*` values are in `.env`.
 
 Requires Node 20.19+ (tested on Node 22).
 
@@ -106,12 +109,12 @@ Enquiries are sent to **`api/enquiry.ts`**, a small server function included in 
    - **Gmail / Google Workspace:** turn on 2-Step Verification, then go to Google Account → Security → *App passwords*. `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`.
    - **Zoho Mail:** Settings → Security → App Passwords. `smtp.zoho.in`, port `465`.
    - **Outlook / Microsoft 365:** `smtp.office365.com`, port `587`. SMTP sending may need to be enabled by the administrator.
-2. **Local testing:** copy `.env.example` to `.env` and fill in the `SMTP_*` values. `npm run dev` runs the function locally, so a real test email is delivered.
+2. **Local testing:** copy `.env.example` to `.env` and fill in the `SMTP_*` values. `npm run dev`, `npm start` and `npm run preview` all run the function locally, so a real test email is delivered.
 3. **Live site (Vercel):** Project → Settings → Environment Variables. Add `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, optionally `ENQUIRY_TO` and `ALLOWED_ORIGINS=https://www.your-domain.com`. Then redeploy.
 
 Server-only values (`SMTP_*`, `ENQUIRY_TO`, `ALLOWED_ORIGINS`) must **not** start with `VITE_`, which would expose them in the browser.
 
-The form always sends to `/api/enquiry`; there is nothing to configure in the browser. If the `SMTP_*` settings are missing, the form shows "Online appointment requests are not yet enabled" with the office phone and email. Use `npm run dev` to test locally: `npm run preview` serves the pages only, not the email function. Visitors are told not to submit confidential details or documents; keep it that way.
+The form always sends to `/api/enquiry`; there is nothing to configure in the browser. If the `SMTP_*` settings are missing, the form shows "Online appointment requests are not yet enabled" with the office phone and email. Visitors are told not to submit confidential details or documents; keep it that way.
 
 **Other hosts:** Netlify and other hosts need `api/enquiry.ts` adapted to their function format.
 
