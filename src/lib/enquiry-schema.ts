@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { offeredPracticeAreas } from '@/data/practice-areas'
+// Relative import so the server function (api/enquiry.ts) can share these rules
+import { offeredPracticeAreas } from '../data/practice-areas'
 
 export const serviceOptions = [...offeredPracticeAreas.map((p) => p.title), 'Other / Not sure'] as const
 export const contactMethods = ['Phone call', 'Email', 'WhatsApp'] as const
@@ -14,7 +15,12 @@ const todayIso = () => {
 }
 
 export const enquirySchema = z.object({
-  fullName: z.string().trim().min(2, 'Please enter your full name.').max(80, 'Name is too long.'),
+  fullName: z
+    .string()
+    .trim()
+    .min(2, 'Please enter your full name.')
+    .max(80, 'Name is too long.')
+    .regex(/^[^\p{Cc}<>]+$/u, 'Please use letters only in your name.'),
   phone: z
     .string()
     .trim()

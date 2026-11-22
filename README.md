@@ -37,6 +37,7 @@ GSAP was not needed: every effect (line-by-line text reveal, staggered cards, ti
 ## Folder structure
 
 ```
+api/enquiry.ts               ← server function: emails enquiries to the advocate (Vercel)
 src/
 ├── config/site.ts            ← ALL advocate details (name, bar enrolment, contact, toggles)
 ├── data/                     ← editable content
@@ -87,22 +88,32 @@ scripts/                      ← placeholder-art generators
 ### Animation patterns
 `Reveal` / `RevealItem` give fade-and-slide-up on scroll, with optional staggering. The hero reveals its heading line by line through masks. Buttons use a hover "wipe". Gold underlines animate on links. Cards zoom their images subtly. The experience timeline draws its gold line in. `MotionConfig reducedMotion="user"`, a CSS `prefers-reduced-motion` block and a Lenis opt-out together respect the visitor's motion settings.
 
-## Enquiry form: connect a backend
+## Enquiry form: email delivery (built in)
 
-The form validates the name, phone (10–15 digits), email, service, a date from today onward, contact method, description length and consent. It has a spam honeypot, a loading state, a success state and an error state.
+The form validates every field in the browser (name, phone with 10–15 digits, email, service, a date from today onward, contact method, description length, consent). It has a spam honeypot and shows loading, success and error states.
 
-**It is not functional until an endpoint is set:**
+Enquiries are sent to **`api/enquiry.ts`**, a small server function included in this project. It emails each enquiry **directly to the advocate's own mailbox over SMTP**, so no third-party form service stores client data. The function:
 
-```bash
-# .env
-VITE_ENQUIRY_ENDPOINT=https://formspree.io/f/your-id   # or your own HTTPS API
-```
+- re-checks every field with the same rules as the form (`src/lib/enquiry-schema.ts`);
+- quietly discards bot submissions caught by the honeypot;
+- limits each visitor to 5 submissions per 10 minutes (best effort);
+- rejects oversized requests and, optionally, submissions from other websites (`ALLOWED_ORIGINS`);
+- sends a formatted email with **Reply-To set to the visitor**, so the advocate can simply press Reply.
 
-`src/lib/enquiry.ts` POSTs JSON (`fullName, phone, email, service, preferredDate, contactMethod, message, consent, submittedAt, source`) and treats any 2xx response as success. Without an endpoint:
-- **development** simulates success, and the success panel says so;
-- **production** shows an error asking visitors to call or email instead.
+### Setup
 
-Visitors are told not to submit confidential details or documents. Keep it that way, and if you build your own API, serve it over HTTPS with rate limiting.
+1. **Create an app password** for the mailbox that will send the emails. Don't use the normal login password.
+   - **Gmail / Google Workspace:** turn on 2-Step Verification, then go to Google Account → Security → *App passwords*. `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`.
+   - **Zoho Mail:** Settings → Security → App Passwords. `smtp.zoho.in`, port `465`.
+   - **Outlook / Microsoft 365:** `smtp.office365.com`, port `587`. SMTP sending may need to be enabled by the administrator.
+2. **Local testing:** copy `.env.example` to `.env` and fill in `VITE_ENQUIRY_ENDPOINT=/api/enquiry` and the `SMTP_*` values. `npm run dev` runs the function locally, so a real test email is delivered.
+3. **Live site (Vercel):** Project → Settings → Environment Variables. Add `VITE_ENQUIRY_ENDPOINT=/api/enquiry`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, optionally `ENQUIRY_TO` and `ALLOWED_ORIGINS=https://www.your-domain.com`. Then redeploy.
+
+Server-only values (`SMTP_*`, `ENQUIRY_TO`, `ALLOWED_ORIGINS`) must **not** start with `VITE_`, which would expose them in the browser.
+
+If `VITE_ENQUIRY_ENDPOINT` is empty, development mode simulates success, and production shows an error asking visitors to call or email instead. Visitors are told not to submit confidential details or documents; keep it that way.
+
+**Other hosts:** Netlify or another host needs the function adapted to its format, or `VITE_ENQUIRY_ENDPOINT` pointed at any HTTPS endpoint that accepts a JSON POST.
 
 ## SEO
 
@@ -114,7 +125,7 @@ Visitors are told not to submit confidential details or documents. Keep it that 
 
 ## Deployment
 
-Any static host works. SPA fallbacks are included: `vercel.json` for Vercel and `public/_redirects` for Netlify. Set `VITE_SITE_URL` and `VITE_ENQUIRY_ENDPOINT` in the host's environment settings.
+**Vercel is recommended**, because it runs the built-in enquiry function (`api/`) automatically. Other static hosts work for the pages. SPA fallbacks are included: `vercel.json` for Vercel and `public/_redirects` for Netlify. Set `VITE_SITE_URL` and `VITE_ENQUIRY_ENDPOINT` in the host's environment settings.
 
 ## Accessibility
 
@@ -136,7 +147,7 @@ Skip link, visible gold focus rings, keyboard-operable menu, accordion, select a
 - [ ] `src/data/articles.ts`: advocate reviews each article, confirms jurisdiction and dates, then sets `reviewed: true` (this removes the "Draft — pending review" notice)
 - [ ] Legal pages (`src/pages/legal-page.tsx`): adapt the privacy policy (including the Digital Personal Data Protection Act, 2023), terms and disclaimer, then fill in `[Date]`, `[City]` and the form service name
 - [ ] Disclaimer gate wording approved (toggle: `site.disclaimerGate.enabled`)
-- [ ] `VITE_ENQUIRY_ENDPOINT` configured and a test enquiry received
+- [ ] Enquiry email configured (`VITE_ENQUIRY_ENDPOINT=/api/enquiry` + `SMTP_*` in Vercel) and a test enquiry received
 - [ ] `site.structuredData.enabled = true` once all details are verified
 
 ### Professional-conduct note (India)

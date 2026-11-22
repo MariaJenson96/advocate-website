@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { defineConfig, loadEnv, type Plugin, type ViteDevServer } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
@@ -43,11 +43,49 @@ function seoFiles(siteUrl: string): Plugin {
   }
 }
 
+const SERVER_ENV_KEYS = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'ENQUIRY_TO', 'ALLOWED_ORIGINS']
+
+/**
+ * Runs api/enquiry.ts under `npm run dev`, mirroring the Vercel Function,
+ * so the real email delivery can be tested locally using values from .env.
+ */
+function localApi(env: Record<string, string>): Plugin {
+  return {
+    name: 'advocate-local-api',
+    apply: 'serve',
+    configureServer(server: ViteDevServer) {
+      for (const key of SERVER_ENV_KEYS) if (env[key]) process.env[key] = env[key]
+      server.middlewares.use('/api/enquiry', async (req, res) => {
+        try {
+          const mod = await server.ssrLoadModule('/api/enquiry.ts')
+          const chunks: Buffer[] = []
+          for await (const chunk of req) chunks.push(chunk as Buffer)
+          const headers = new Headers()
+          for (const [k, v] of Object.entries(req.headers)) if (typeof v === 'string') headers.set(k, v)
+          const request = new Request('http://localhost/api/enquiry', {
+            method: req.method,
+            headers,
+            body: req.method === 'POST' ? Buffer.concat(chunks).toString() : undefined,
+          })
+          const response: Response = await (req.method === 'POST' ? mod.POST(request) : mod.GET())
+          res.statusCode = response.status
+          response.headers.forEach((value, key) => res.setHeader(key, value))
+          res.end(await response.text())
+        } catch (err) {
+          server.config.logger.error(String(err))
+          res.statusCode = 500
+          res.end(JSON.stringify({ ok: false }))
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const siteUrl = env.VITE_SITE_URL || site.url
   return {
-    plugins: [react(), tailwindcss(), seoFiles(siteUrl)],
+    plugins: [react(), tailwindcss(), seoFiles(siteUrl), localApi(env)],
     resolve: {
       alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
     },
