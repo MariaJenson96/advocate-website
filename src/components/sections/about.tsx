@@ -24,15 +24,14 @@ export function About() {
             <div className="relative pb-6 pl-6">
               <span aria-hidden="true" className="absolute bottom-0 left-0 h-3/4 w-3/4 border border-gold" />
               <figure className="group relative overflow-hidden bg-black">
-                {/* REPLACE: /public/images/advocate-about.svg with an authentic photograph of the advocate. */}
                 <img
-                  src="/images/advocate-about.svg"
-                  alt={`${site.displayName} in chambers`}
-                  width={900}
-                  height={1100}
+                  src="/images/sekin-shiju-suit.webp"
+                  alt={`${site.displayName} in a formal suit`}
+                  width={880}
+                  height={560}
                   loading="lazy"
                   decoding="async"
-                  className="aspect-[9/11] w-full object-cover grayscale transition-transform duration-[1.6s] ease-luxe group-hover:scale-[1.04]"
+                  className="aspect-[11/7] w-full object-cover object-top grayscale transition-transform duration-[1.6s] ease-luxe group-hover:scale-[1.04]"
                 />
               </figure>
             </div>

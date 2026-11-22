@@ -35,7 +35,7 @@ export function Header() {
     >
       <div className={cn('container-luxe flex items-center justify-between gap-6 transition-[height] duration-500 ease-luxe', solid ? 'h-18' : 'h-20 md:h-24')}>
         <Link to="/" className="group flex min-w-0 items-center gap-3.5 xl:shrink-0" aria-label={`${site.displayName} — home`}>
-          <Monogram className="size-10 transition-colors sm:size-11 duration-500 group-hover:bg-gold group-hover:text-black" />
+          <Monogram className="h-9 transition-transform duration-500 ease-luxe group-hover:scale-105 sm:h-11" />
           <span className="flex min-w-0 flex-col">
             <span className="truncate font-display text-lg font-semibold leading-tight tracking-wide text-white sm:text-xl">{site.displayName}</span>
             <span className="eyebrow truncate text-[0.5rem] tracking-[0.12em] text-gold xs:text-[0.54rem] xs:tracking-[0.18em] sm:text-[0.6rem] sm:tracking-[0.26em]">{site.designation}</span>

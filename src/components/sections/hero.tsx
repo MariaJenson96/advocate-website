@@ -110,12 +110,11 @@ function HeroPortrait() {
       <span aria-hidden="true" className="animate-orbit absolute -right-8 -top-8 size-36 rounded-full border border-dashed border-gold/30 sm:-right-12 sm:-top-12 sm:size-52" />
       <span aria-hidden="true" className="absolute inset-0 translate-x-4 translate-y-4 rounded-t-full border border-gold/60 sm:translate-x-6 sm:translate-y-6" />
       <div className="group relative aspect-[4/5] overflow-hidden rounded-t-full border border-gold/30 bg-black">
-        {/* REPLACE: /public/images/advocate-portrait.svg with the advocate's professional photograph (WebP/AVIF, ~1200×1500). */}
         <img
-          src="/images/advocate-portrait.svg"
+          src="/images/sekin-shiju-portrait.webp"
           alt={`Portrait of ${site.displayName}`}
-          width={800}
-          height={1000}
+          width={1000}
+          height={1310}
           fetchPriority="high"
           decoding="async"
           className="size-full object-cover object-top grayscale transition-transform duration-[1.6s] ease-luxe group-hover:scale-[1.04]"

@@ -66,8 +66,9 @@ src/
 │   ├── sections/             ← Hero, About, PracticeAreas, Gallery, Experience, Approach, ArticlesPreview, Faq, Appointment, Contact
 │   └── articles/ArticleCard.tsx
 └── pages/                    ← Home, Articles, ArticleDetail, PracticeArea, Legal (privacy/terms/disclaimer), 404
-public/images/                ← placeholder artwork (replace with real photography)
-scripts/                      ← placeholder-art generators
+public/images/                ← web-ready images (portrait, logo, gallery, article art)
+assets-src/brand/             ← original logo & photos (source for scripts/process-brand-images.py)
+scripts/                      ← image processing & placeholder-art generators, email test
 ```
 
 ## Routes
@@ -150,10 +151,9 @@ Skip link, visible gold focus rings, keyboard-operable menu, accordion, select a
 
 - [ ] `src/config/site.ts`: the **office address is a sample** (Court Road, Nagercoil) — replace it and the map query; confirm the bar council, then fill in the enrolment number and year, education, courts, languages, phone, WhatsApp, email, address, map query, hours, social links, `url`
 - [ ] `index.html`: fallback `<title>` and description use the real name
-- [ ] Replace `public/images/advocate-portrait.svg` and `advocate-about.svg` with **authentic photographs** (WebP or AVIF, about 1200×1500 and 900×1100). Update the `src` paths if the extension changes.
+- [x] Portrait, About photo and SS Legal Firm logo added (originals in `assets-src/brand/`, processed by `scripts/process-brand-images.py`)
 - [ ] Gallery: replace the six placeholders in `public/images/gallery/` with authentic photographs of the advocate and update `src/data/gallery.ts` (captions, alt text, width/height). Avoid courtroom interiors, where photography is generally not permitted.
 - [ ] Replace article images in `public/images/articles/` (or keep the abstract artwork)
-- [ ] Regenerate `public/og-image.png` (1200×630) and the favicon with the real name and initials (`scripts/`)
 - [ ] `src/data/experience.ts`: verified timeline only. Remove any entry that doesn't apply.
 - [ ] `src/data/practice-areas.ts`: set `offered` to match the services actually provided
 - [ ] `src/components/sections/about.tsx`: replace the bracketed biography text

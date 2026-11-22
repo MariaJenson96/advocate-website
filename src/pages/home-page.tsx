@@ -24,6 +24,7 @@ export function HomePage() {
           description: site.description,
           url: absoluteUrl('/'),
           image: absoluteUrl('/og-image.png'),
+          logo: absoluteUrl(site.logo.full),
           telephone: site.contact.phoneHref,
           email: site.contact.email,
           address: { '@type': 'PostalAddress', streetAddress: site.contact.address.join(', '), addressCountry: 'IN' },

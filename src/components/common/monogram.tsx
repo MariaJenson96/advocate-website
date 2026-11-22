@@ -1,18 +1,17 @@
 import { cn } from '@/lib/utils'
 import { site } from '@/config/site'
 
-/** Professional initials mark — a gold-framed square with serif initials. */
+/** SS Legal Firm emblem (eagle with SS / LF). Decorative: the name is always shown beside it. */
 export function Monogram({ className }: { className?: string }) {
   return (
-    <span
+    <img
+      src={site.logo.mark}
+      alt=""
       aria-hidden="true"
-      className={cn(
-        'relative grid size-11 shrink-0 place-items-center border border-gold/80 font-display text-lg font-semibold tracking-wider text-gold',
-        'after:absolute after:inset-1 after:border after:border-gold/25',
-        className,
-      )}
-    >
-      {site.initials}
-    </span>
+      width={320}
+      height={229}
+      decoding="async"
+      className={cn('h-10 w-auto shrink-0 select-none object-contain', className)}
+    />
   )
 }

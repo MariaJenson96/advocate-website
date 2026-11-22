@@ -29,7 +29,7 @@ export const timeline: TimelineEntry[] = [
   {
     period: '[Year]',
     title: 'Enrolled as an Advocate',
-    organisation: '[Bar Council of State] — [Enrolment No.]',
+    organisation: 'Bar Council of Tamil Nadu & Puducherry — [Enrolment No.]',
     description: 'Enrolment details as issued by the State Bar Council.',
     kind: 'enrolment',
   },

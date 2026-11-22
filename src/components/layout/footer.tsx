@@ -2,7 +2,6 @@ import { Link } from 'react-router'
 import { ArrowUpRight, Clock, Mail, MapPin, Phone } from 'lucide-react'
 import { legalDisclaimer, navLinks, site } from '@/config/site'
 import { offeredPracticeAreas } from '@/data/practice-areas'
-import { Monogram } from '@/components/common/monogram'
 import { NavAnchor } from '@/components/common/nav-anchor'
 
 function FooterHeading({ children }: { children: string }) {
@@ -27,8 +26,8 @@ export function Footer() {
       <div className="container-luxe relative">
         <div className="grid gap-14 py-20 md:grid-cols-2 lg:grid-cols-12 lg:gap-10 lg:py-24">
           <div className="lg:col-span-4">
-            <Link to="/" className="flex items-center gap-4">
-              <Monogram className="size-14 text-xl" />
+            <Link to="/" className="inline-flex flex-col items-start gap-5" aria-label={`${site.firmName} — home`}>
+              <img src={site.logo.full} alt={site.firmName} width={795} height={785} loading="lazy" decoding="async" className="h-28 w-auto" />
               <span className="flex flex-col">
                 <span className="font-display text-2xl font-semibold text-white">{site.displayName}</span>
                 <span className="eyebrow mt-1.5 text-[0.6rem] text-gold">{site.designation}</span>
@@ -134,7 +133,7 @@ export function Footer() {
           </p>
           <div className="mt-8 flex flex-col gap-5 text-xs text-white/45 md:flex-row md:items-center md:justify-between">
             <p>
-              © {year} {site.displayName}. All rights reserved.
+              © {year} {site.firmName} · {site.displayName}. All rights reserved.
             </p>
             <ul className="flex flex-wrap gap-x-7 gap-y-2">
               <li>

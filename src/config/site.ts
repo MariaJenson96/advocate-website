@@ -16,7 +16,9 @@ export const site = {
   /** Advocate identity */
   name: 'Sekin Shiju',
   displayName: 'Adv. Sekin Shiju',
-  initials: 'SS', // used for the monogram logo
+  initials: 'SS', // used for decorative background lettering
+  firmName: 'SS Legal Firm',
+  logo: { mark: '/images/logo-mark.png', full: '/images/logo-full.png' },
   designation: 'Advocate & Legal Consultant',
   jurisdiction: 'India',
   locale: 'en_IN',

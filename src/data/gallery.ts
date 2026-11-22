@@ -17,6 +17,8 @@ export interface GalleryImage {
 }
 
 export const gallery: GalleryImage[] = [
+  { src: '/images/sekin-shiju-portrait.webp', alt: 'Portrait of Adv. Sekin Shiju', caption: 'Adv. Sekin Shiju', category: 'Portrait', width: 1000, height: 1310 },
+  { src: '/images/gallery/youtube-channel.webp', alt: 'Sekin Shiju YouTube channel badge', caption: 'Legal awareness on YouTube', category: 'Media', width: 1000, height: 1000 },
   { src: '/images/gallery/chambers.svg', alt: 'The advocate at work in chambers', caption: 'In chambers', category: 'Practice', width: 800, height: 1000 },
   { src: '/images/gallery/court-complex.svg', alt: 'The advocate outside the court complex', caption: 'At the court complex', category: 'Practice', width: 1200, height: 800 },
   { src: '/images/gallery/consultation.svg', alt: 'The advocate during a client consultation', caption: 'Client consultation', category: 'Clients', width: 1000, height: 1000 },

@@ -48,7 +48,8 @@ portrait = svg(800, 1000, grid(800, 1000, 50, 0.05) + f'''
 {label(400, 150, "PLACEHOLDER PORTRAIT", 15, 0.6)}
 {label(400, 176, "REPLACE WITH ADVOCATE PHOTOGRAPH", 10, 0.45)}
 ''')
-(OUT / "advocate-portrait.svg").write_text(portrait)
+# (replaced by real brand assets — see scripts/process-brand-images.py)
+# (OUT / "advocate-portrait.svg").write_text(portrait)
 
 # ---------------------------------------------------------------- about / chambers
 shelves = ""
@@ -80,7 +81,8 @@ about = svg(900, 1100, grid(900, 1100, 60, 0.05) + shelves + f'''
 {label(450, 960, "PLACEHOLDER IMAGE", 16, 0.6)}
 {label(450, 990, "REPLACE WITH AN AUTHENTIC PHOTOGRAPH OF THE ADVOCATE", 10, 0.45)}
 ''')
-(OUT / "advocate-about.svg").write_text(about)
+# (replaced by real brand assets — see scripts/process-brand-images.py)
+# (OUT / "advocate-about.svg").write_text(about)
 
 # ---------------------------------------------------------------- articles
 S = f'fill="none" stroke="{G}" stroke-width="2.2"'
@@ -123,7 +125,8 @@ favicon = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect w
            f'<rect x="4" y="4" width="56" height="56" fill="none" stroke="{G}" stroke-width="2"/>'
            f'<rect x="9" y="9" width="46" height="46" fill="none" stroke="{G}" stroke-opacity="0.35"/>'
            f'<text x="32" y="42" text-anchor="middle" font-family="Georgia, serif" font-size="25" font-weight="600" fill="{G}">SS</text></svg>')
-(OUT.parent / "favicon.svg").write_text(favicon)
+# (replaced by real brand assets — see scripts/process-brand-images.py)
+# (OUT.parent / "favicon.svg").write_text(favicon)
 
 og = svg(1200, 630, grid(1200, 630, 60, 0.06) + f'''
 <rect x="40" y="40" width="1120" height="550" fill="none" stroke="{G}" stroke-opacity="0.4"/>
@@ -135,7 +138,8 @@ og = svg(1200, 630, grid(1200, 630, 60, 0.06) + f'''
 <path d="M272 380 H560" stroke="{G}"/>
 <text x="272" y="430" font-family="Georgia, serif" font-style="italic" font-size="34" fill="{W}" fill-opacity="0.8">Committed to Justice. Dedicated to Your Rights.</text>
 ''')
-(Path(__file__).resolve().parent / "og-source.svg").write_text(og)
+# (replaced by real brand assets — see scripts/process-brand-images.py)
+# (Path(__file__).resolve().parent / "og-source.svg").write_text(og)
 print("placeholders written to", OUT)
 
 # ---------------------------------------------------------------- gallery
