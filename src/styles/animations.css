@@ -1,0 +1,88 @@
+/* ==========================================================================
+   KEYFRAMES & AMBIENT ANIMATION
+   All decorative motion is disabled under prefers-reduced-motion.
+   ========================================================================== */
+
+@keyframes accordion-down {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-accordion-content-height); opacity: 1; }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* A short gold "light" travelling down each hero column line */
+@keyframes line-travel {
+  0% { transform: translateY(-120%); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateY(120vh); opacity: 0; }
+}
+
+/* Slow breathing of the background monogram */
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -14px, 0) scale(1.015); }
+}
+
+/* Thin rotating ring around the hero portrait */
+@keyframes orbit {
+  to { transform: rotate(360deg); }
+}
+
+/* Scroll cue */
+@keyframes scroll-cue {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+@layer components {
+  .hero-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: rgb(197 162 83 / 0.08);
+    overflow: hidden;
+  }
+  .hero-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 22vh;
+    background-image: linear-gradient(to bottom, transparent, rgb(197 162 83 / 0.7), transparent);
+    animation: line-travel 9s var(--ease-luxe) infinite;
+  }
+  .hero-line:nth-child(2)::after { animation-delay: 2.2s; animation-duration: 11s; }
+  .hero-line:nth-child(3)::after { animation-delay: 4.6s; animation-duration: 10s; }
+  .hero-line:nth-child(4)::after { animation-delay: 1.1s; animation-duration: 12s; }
+  .hero-line:nth-child(5)::after { animation-delay: 6s; animation-duration: 9.5s; }
+
+  .animate-drift { animation: drift 14s ease-in-out infinite; }
+  .animate-orbit { animation: orbit 60s linear infinite; }
+  .animate-scroll-cue { animation: scroll-cue 2.4s var(--ease-luxe) infinite; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+  .hero-line::after,
+  .animate-drift,
+  .animate-orbit,
+  .animate-scroll-cue {
+    animation: none;
+  }
+}

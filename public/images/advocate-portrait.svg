@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000"><rect width="800" height="1000" fill="#080808"/><g stroke="#C5A253" stroke-opacity="0.05" stroke-width="1"><path d="M0 0V1000" /><path d="M50 0V1000" /><path d="M100 0V1000" /><path d="M150 0V1000" /><path d="M200 0V1000" /><path d="M250 0V1000" /><path d="M300 0V1000" /><path d="M350 0V1000" /><path d="M400 0V1000" /><path d="M450 0V1000" /><path d="M500 0V1000" /><path d="M550 0V1000" /><path d="M600 0V1000" /><path d="M650 0V1000" /><path d="M700 0V1000" /><path d="M750 0V1000" /><path d="M800 0V1000" /><path d="M0 0H800" /><path d="M0 50H800" /><path d="M0 100H800" /><path d="M0 150H800" /><path d="M0 200H800" /><path d="M0 250H800" /><path d="M0 300H800" /><path d="M0 350H800" /><path d="M0 400H800" /><path d="M0 450H800" /><path d="M0 500H800" /><path d="M0 550H800" /><path d="M0 600H800" /><path d="M0 650H800" /><path d="M0 700H800" /><path d="M0 750H800" /><path d="M0 800H800" /><path d="M0 850H800" /><path d="M0 900H800" /><path d="M0 950H800" /><path d="M0 1000H800" /></g>
+<circle cx="400" cy="400" r="300" fill="none" stroke="#C5A253" stroke-opacity="0.12"/>
+<circle cx="400" cy="400" r="230" fill="none" stroke="#C5A253" stroke-opacity="0.08"/>
+<!-- shoulders / gown -->
+<path d="M90 1000 C100 790 200 668 330 632 L400 760 L470 632 C600 668 700 790 710 1000 Z" fill="#FFFFFF" fill-opacity="0.045" stroke="#C5A253" stroke-width="2"/>
+<!-- lapels -->
+<path d="M330 632 L372 820 L400 760 M470 632 L428 820 L400 760" fill="none" stroke="#C5A253" stroke-width="2"/>
+<path d="M300 645 L352 900 M500 645 L448 900" fill="none" stroke="#C5A253" stroke-opacity="0.35" stroke-width="1.5"/>
+<!-- collar & advocate's bands -->
+<path d="M352 600 L400 660 L448 600" fill="none" stroke="#FFFFFF" stroke-opacity="0.8" stroke-width="2"/>
+<rect x="384" y="664" width="13" height="74" fill="#FFFFFF" fill-opacity="0.9"/>
+<rect x="403" y="664" width="13" height="74" fill="#FFFFFF" fill-opacity="0.9"/>
+<!-- neck -->
+<path d="M360 520 C362 560 358 590 352 604 M440 520 C438 560 442 590 448 604" fill="none" stroke="#C5A253" stroke-width="2"/>
+<!-- head -->
+<ellipse cx="400" cy="420" rx="100" ry="124" fill="#FFFFFF" fill-opacity="0.04" stroke="#C5A253" stroke-width="2"/>
+<path d="M302 400 C296 318 344 282 404 284 C466 286 506 326 498 404 C486 360 460 336 404 334 C350 336 318 358 302 400 Z" fill="#C5A253" fill-opacity="0.28" stroke="#C5A253" stroke-width="1.5"/>
+<path d="M400 238 V170" stroke="#C5A253" stroke-opacity="0.4"/>
+<text x="400" y="150" fill="#C5A253" fill-opacity="0.6" font-family="Helvetica, Arial, sans-serif" font-size="15" letter-spacing="5.2" text-anchor="middle">PLACEHOLDER PORTRAIT</text>
+<text x="400" y="176" fill="#C5A253" fill-opacity="0.45" font-family="Helvetica, Arial, sans-serif" font-size="10" letter-spacing="3.5" text-anchor="middle">REPLACE WITH ADVOCATE PHOTOGRAPH</text>
+</svg>

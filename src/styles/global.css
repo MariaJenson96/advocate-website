@@ -1,0 +1,171 @@
+@import 'tailwindcss';
+@import './theme.css';
+@import './animations.css';
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-black font-sans text-white antialiased;
+    overflow-x: clip;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display font-medium;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+
+  /* No default browser link colours anywhere */
+  a { color: inherit; text-decoration: none; }
+
+  ::selection { @apply bg-gold text-black; }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-4 outline-gold;
+  }
+
+  /* Dark-theme form controls */
+  input, textarea, select, button { font: inherit; color: inherit; }
+  input::placeholder, textarea::placeholder { @apply text-white/35; }
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(72%) sepia(32%) saturate(560%) hue-rotate(2deg) brightness(92%);
+    cursor: pointer;
+  }
+  /* Keep autofilled fields on-theme instead of the browser's yellow/blue */
+  input:-webkit-autofill,
+  textarea:-webkit-autofill {
+    -webkit-text-fill-color: var(--color-white);
+    -webkit-box-shadow: 0 0 0 1000px var(--color-black) inset;
+    caret-color: var(--color-gold);
+    transition: background-color 9999s ease-out 0s;
+  }
+
+  /* Scrollbar */
+  * { scrollbar-color: rgb(197 162 83 / 0.5) var(--color-black); scrollbar-width: thin; }
+}
+
+/* ==========================================================================
+   REUSABLE UTILITIES
+   ========================================================================== */
+
+/* Page container: mobile-first gutters, widens on 2K/4K */
+@utility container-luxe {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  max-width: 84rem;
+  @media (width >= 40rem) { padding-inline: 2rem; }
+  @media (width >= 64rem) { padding-inline: 3rem; }
+  @media (width >= 112rem) { max-width: 100rem; }
+  @media (width >= 150rem) { max-width: 128rem; }
+}
+
+/* Vertical rhythm for sections */
+@utility section-pad {
+  padding-block: 5rem;
+  @media (width >= 48rem) { padding-block: 7rem; }
+  @media (width >= 80rem) { padding-block: 9rem; }
+}
+
+/* Uppercase section label */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+/* Animated gold underline (grows from left on hover/focus) */
+@utility gold-underline {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.3em;
+    height: 1px;
+    width: 100%;
+    background-color: var(--color-gold);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-base) var(--ease-luxe);
+  }
+  &:hover::after,
+  &:focus-visible::after,
+  &[aria-current='page']::after,
+  &[data-active='true']::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* Gold hairline rule with a centre diamond */
+@utility rule-diamond {
+  position: relative;
+  height: 1px;
+  background-color: rgb(197 162 83 / 0.35);
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border: 1px solid var(--color-gold);
+    background-color: var(--color-black);
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+}
+
+/* Faint architectural grid for dark sections */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(197 162 83 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(197 162 83 / 0.05) 1px, transparent 1px);
+  background-size: 88px 88px;
+}
+
+/* Outlined display text (used for large decorative numerals/monograms) */
+@utility text-outline-gold {
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(197 162 83 / 0.22);
+}
+
+/* Map embed toned into black & white */
+@utility map-mono {
+  filter: grayscale(1) invert(0.92) contrast(0.9);
+}
+
+/* ==========================================================================
+   ARTICLE TYPOGRAPHY (editorial reading experience)
+   ========================================================================== */
+@layer components {
+  .prose-legal {
+    @apply text-[1.075rem] leading-[1.85] text-white/80 md:text-[1.15rem];
+  }
+  .prose-legal > * + * { margin-top: 1.4em; }
+  .prose-legal h2 {
+    @apply mt-14 font-display text-3xl leading-tight text-white md:text-4xl;
+  }
+  .prose-legal h3 { @apply mt-10 font-display text-2xl text-white; }
+  .prose-legal ul { @apply space-y-3 pl-0; }
+  .prose-legal li {
+    @apply relative pl-7;
+  }
+  .prose-legal li::before {
+    content: '';
+    @apply absolute left-0 top-[0.8em] h-px w-4 bg-gold;
+  }
+  .prose-legal blockquote {
+    @apply border-l border-gold py-2 pl-6 font-display text-2xl italic leading-snug text-white md:text-3xl;
+  }
+  .prose-legal strong { @apply font-semibold text-white; }
+}

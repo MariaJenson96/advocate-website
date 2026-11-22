@@ -1,0 +1,61 @@
+/* ==========================================================================
+   DESIGN TOKENS — strict three-colour system
+   Black #080808 · Gold #C5A253 · White #FFFFFF
+   Every default Tailwind colour is removed so no other colour can be used.
+   Use opacity modifiers (e.g. text-white/70, border-gold/30) for variation.
+   ========================================================================== */
+
+@theme {
+  /* ---- Colour: wipe Tailwind's palette, then define ours ---- */
+  --color-*: initial;
+  --color-black: #080808;
+  --color-gold: #c5a253;
+  --color-white: #ffffff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* ---- Typography ---- */
+  --font-*: initial;
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Fluid type scale for headings (min @320px → max @1440px+) */
+  --text-display: clamp(2.6rem, 1.6rem + 5vw, 6.25rem);
+  --text-display--line-height: 0.98;
+  --text-h1: clamp(2.25rem, 1.5rem + 3.6vw, 4.5rem);
+  --text-h1--line-height: 1.04;
+  --text-h2: clamp(2rem, 1.45rem + 2.6vw, 3.75rem);
+  --text-h2--line-height: 1.08;
+  --text-h3: clamp(1.45rem, 1.25rem + 0.9vw, 2rem);
+  --text-h3--line-height: 1.2;
+  --text-eyebrow: 0.72rem;
+  --text-eyebrow--line-height: 1;
+
+  /* Wide tracking for uppercase labels */
+  --tracking-eyebrow: 0.32em;
+
+  /* ---- Radius: near-square, editorial ---- */
+  --radius-card: 2px;
+  --radius-button: 1px;
+
+  /* ---- Shadows (black / gold only) ---- */
+  --shadow-lift: 0 40px 80px -40px rgb(8 8 8 / 0.9);
+  --shadow-gold: 0 0 0 1px rgb(197 162 83 / 0.35), 0 24px 60px -30px rgb(197 162 83 / 0.35);
+  --shadow-soft: 0 20px 50px -30px rgb(8 8 8 / 0.35);
+
+  /* ---- Motion ---- */
+  --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 200ms;
+  --duration-base: 450ms;
+  --duration-slow: 900ms;
+
+  /* ---- Breakpoints (adds 2K / 4K tiers) ---- */
+  --breakpoint-xs: 22rem;   /* 352px */
+  --breakpoint-3xl: 112rem; /* 1792px */
+  --breakpoint-4xl: 150rem; /* 2400px */
+
+  /* ---- Animations (keyframes live in animations.css) ---- */
+  --animate-accordion-down: accordion-down 450ms var(--ease-luxe);
+  --animate-accordion-up: accordion-up 350ms var(--ease-luxe);
+  --animate-spin: spin 0.9s linear infinite;
+}
