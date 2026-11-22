@@ -112,6 +112,8 @@ Enquiries are sent to **`api/enquiry.ts`**, a small server function included in 
 2. **Add the settings:** copy `.env.example` to a file named exactly `.env` (other names such as `.env.adv` are ignored) and fill in the `SMTP_*` values.
 3. **Run the site** with `npm run dev` or `npm start`. Both run the email function, so submitting the form delivers a real email. Restart after changing `.env`.
 
+**Troubleshooting:** run `npm run test:email`. It checks that `.env` exists and is complete, logs in to the mail server and sends a test email, with a plain-English hint if something fails. When the site starts, the terminal also shows `✉ Enquiry email: ON` or `OFF — missing …`.
+
 `.env` is excluded from git (see `.gitignore`), so the password stays on your computer. **Never commit it**: the repository is public.
 
 Server-only values (`SMTP_*`, `ENQUIRY_TO`, `ALLOWED_ORIGINS`) must **not** start with `VITE_`, which would expose them in the browser.

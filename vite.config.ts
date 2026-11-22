@@ -81,18 +81,28 @@ function apiMiddleware(load: () => Promise<ApiModule>, log: (msg: string) => voi
  * sent on your own computer using the SMTP_* values from .env.
  */
 function localApi(env: Record<string, string>): Plugin {
-  const exposeEnv = () => {
+  const exposeEnv = (logger: { info: (m: string) => void; warn: (m: string) => void }) => {
     for (const key of SERVER_ENV_KEYS) if (env[key]) process.env[key] = env[key]
+    // Startup report so a missing or misnamed .env is obvious (never prints the password)
+    const missing = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'].filter((k) => !process.env[k])
+    if (missing.length === 0) {
+      logger.info(`  ✉  Enquiry email: ON — sending as ${process.env.SMTP_USER} via ${process.env.SMTP_HOST}:${process.env.SMTP_PORT || 465}`)
+    } else {
+      logger.warn(
+        `  ✉  Enquiry email: OFF — missing ${missing.join(', ')}.\n` +
+          `     Put them in a file named exactly ".env" in ${process.cwd()} and restart.`,
+      )
+    }
   }
   return {
     name: 'advocate-local-api',
     configureServer(server: ViteDevServer) {
-      exposeEnv()
+      exposeEnv(server.config.logger)
       const load = () => server.ssrLoadModule('/api/enquiry.ts') as Promise<ApiModule>
       server.middlewares.use('/api/enquiry', apiMiddleware(load, (m) => server.config.logger.error(m)))
     },
     configurePreviewServer(server: PreviewServer) {
-      exposeEnv()
+      exposeEnv(server.config.logger)
       let cached: Promise<ApiModule> | undefined
       const load = () =>
         (cached ??= runnerImport<ApiModule>(fileURLToPath(new URL('./api/enquiry.ts', import.meta.url))).then((r) => r.module))
